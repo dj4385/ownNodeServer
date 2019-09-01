@@ -27,6 +27,7 @@ function serveStaticFile(req,res){
                 userDb.userData.forEach(ele=>{
                     console.log('Array is',ele)
                 })
+                
                 res.write('User Register Successfully' )
                 res.end()
             }
@@ -43,7 +44,16 @@ function serveStaticFile(req,res){
         })
         req.on('end', ()=>{
             var loginObj = qString.parse(loginData)
-            console.log(loginObj)
+            userDb.userData.forEach(ele=>{
+                if(ele.userID === loginObj.userID && ele.password === loginObj.password){
+                    console.log(ele.userID)
+                    res.write(`Welcome ${ele.userID}`)
+                    res.end()
+                } else {
+                    res.write('Invalid Login ID and password')
+                    res.end()
+                }
+            })
         })
         req.on('error', err=>{
             res.write(err)
