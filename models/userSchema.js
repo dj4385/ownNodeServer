@@ -8,4 +8,4 @@ class userSc{
     }
 }
 
-module.export = userSc
+module.exports = userSc
