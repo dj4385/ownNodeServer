@@ -15,9 +15,6 @@ function serveStaticFile(req,res){
 
     } if(req.url === 'doPost' && req.method == 'POST'){
 
-    } else {
-        res.write('<h1>Invalid request</h1>')
-        res.end();
     }
 }
 
@@ -41,4 +38,4 @@ function isStatic(uri){
 
 
 const app = http.createServer(serveStaticFile)
-app.listen(3000,()=>console.log('server started'))
+app.listen(8000,()=>console.log('server started'))
