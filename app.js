@@ -53,7 +53,7 @@ function serveStaticFile(req,res){
                     console.log(ele.userID)
                     res.write(`Welcome ${ele.userID}`)
                     res.write('<br><a href="updateUserInfo.html">Delete Account</a><br><a href="login.html">Logout</a>')
-                    res.write(`
+                    res.write(`<br><h3>Update Profiel</h3><br>
                     <form action="/doUpdate" method="POST">
                     <label for="">User ID</label><br>
                     <input type="text" name="userID" id="" value="${ele.userID}" readonly><br>
@@ -65,7 +65,7 @@ function serveStaticFile(req,res){
                     <input type="text" name="address" id="" value="${ele.address}"><br>
                     <label for="">Contact Number</label><br>
                     <input type="text" name="phoneNo" id="" value="${ele.phoneNo}"><br>
-                    <input type="submit" value="Update"><br>
+                    <input type="submit" value="Update"/><br>
                 </form>
                     `)
                 } 
@@ -79,8 +79,23 @@ function serveStaticFile(req,res){
             res.write(err)
             res.end()
         })
-    } else if(req.url === '/updateUserInfo.html'){
-        serveStaticFile(req.url,res)
+    } else if(req.url === '/doUpdate' && req.method=='POST'){
+        var updateData = ''
+        res.setHeader('Content-type','text/html')
+        req.on('data', chunk=>{
+            updateData += chunk
+        })
+        req.on('end',()=>{
+
+            var updateDataObj = qString.parse(updateData)
+            var result = userCtrl.updateUser(updateDataObj)
+            res.write('User Updated Successfully <a href="login.html">Login Again</a>')
+            res.end()
+        })
+        req.on('error',err=>{
+            res.write(err)
+            res.end()
+        })
     }
 }
 
