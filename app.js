@@ -4,7 +4,8 @@ const http = require('http'),
       url = require('url'),
       qString = require('querystring'),
       userCtrl = require('./controllers/userCtrl'),
-      userDb = require('./db/userDB')
+      userDb = require('./db/userDB'),
+      userSchema = require('./models/userSchema')
 
 function serveStaticFile(req,res){
     if(req.url == '/'){
@@ -18,11 +19,12 @@ function serveStaticFile(req,res){
         })        
         req.on('end',()=>{
             var regDataObj = qString.parse(data)
-            if(userCtrl.searchUser(regDataObj) != null){
+            var registerUser = new userSchema(regDataObj.userID,regDataObj.password,regDataObj.name,regDataObj.address,regDataObj.phoneNo)
+            if(userCtrl.searchUser(registerUser) != null){
                 res.write('User Already registered')
                 res.end()
             } else {
-                userCtrl.addUser(regDataObj)
+                userCtrl.addUser(registerUser)
                 userDb.userData.forEach(ele=>{
                     console.log('Array is',ele)
                 })
@@ -37,23 +39,23 @@ function serveStaticFile(req,res){
         })
 
     } else if(req.url === '/doLogin' && req.method == 'POST'){
+        res.setHeader('Content-type','text/html')
         var loginData = ''
         req.on('data', chunk=>{
             loginData += chunk
         })
         req.on('end', ()=>{
             var loginObj = qString.parse(loginData)
-            userDb.userData.forEach(ele=>{
+            userDb.userData.filter(ele=>{
                 if(ele.userID === loginObj.userID && ele.password === loginObj.password){
                     console.log(ele.userID)
-                    res.setHeader('Content-type','text/html')
                     res.write(`Welcome ${ele.userID}`)
                     res.write('<br><a href="updateUserInfo.html">Update Profile</a><br><a href="updateUserInfo.html">Delete Account</a><br><a href="login.html">Logout</a>')
-                    res.end()
-                } else {
-                    res.write('Invalid Login ID and password')
-                    res.end()
-                }
+                } 
+                // else {
+                //     res.write('Invalid Login ID and password')
+                // }
+                res.end()
             })
         })
         req.on('error', err=>{
