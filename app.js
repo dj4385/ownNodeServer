@@ -19,17 +19,19 @@ function serveStaticFile(req,res){
         })        
         req.on('end',()=>{
             var regDataObj = qString.parse(data)
-            var registerUser = new userSchema(regDataObj.userID,regDataObj.password,regDataObj.name,regDataObj.address,regDataObj.phoneNo)
-            if(userCtrl.searchUser(registerUser) != null){
-                res.write('User Already registered')
-                res.end()
-            } else {
-                userCtrl.addUser(registerUser)
+            // var registerUser = new userSchema(regDataObj.userID,regDataObj.password,regDataObj.name,regDataObj.address,regDataObj.phoneNo)
+            var searchResult = userCtrl.searchUser(regDataObj)
+            console.log("Search",searchResult)
+            if( searchResult == false){
+                userCtrl.addUser(regDataObj)
                 userDb.userData.forEach(ele=>{
                     console.log('Array is',ele)
                 })
                 res.setHeader('Content-type','text/html')
                 res.write('User Register Successfully. <a href="login.html">Login Now</a>' )
+                res.end()
+            } else {
+                res.write('User Already registered')
                 res.end()
             }
         })
@@ -50,7 +52,22 @@ function serveStaticFile(req,res){
                 if(ele.userID === loginObj.userID && ele.password === loginObj.password){
                     console.log(ele.userID)
                     res.write(`Welcome ${ele.userID}`)
-                    res.write('<br><a href="updateUserInfo.html">Update Profile</a><br><a href="updateUserInfo.html">Delete Account</a><br><a href="login.html">Logout</a>')
+                    res.write('<br><a href="updateUserInfo.html">Delete Account</a><br><a href="login.html">Logout</a>')
+                    res.write(`
+                    <form action="/doUpdate" method="POST">
+                    <label for="">User ID</label><br>
+                    <input type="text" name="userID" id="" value="${ele.userID}" readonly><br>
+                    <label for="">Password</label><br>
+                    <input type="password" name="password" id="" value="${ele.password}"><br>
+                    <label for="">Full Name</label><br>
+                    <input type="text" name="name" id="" value="${ele.name}"><br>
+                    <label for="">Address</label><br>
+                    <input type="text" name="address" id="" value="${ele.address}"><br>
+                    <label for="">Contact Number</label><br>
+                    <input type="text" name="phoneNo" id="" value="${ele.phoneNo}"><br>
+                    <input type="submit" value="Update"><br>
+                </form>
+                    `)
                 } 
                 // else {
                 //     res.write('Invalid Login ID and password')

@@ -5,13 +5,17 @@ module.exports = {
         return userDatabase.userData.push(userObj)
     },
     searchUser : (userObj)=>{
-        userDatabase.userData.find(ele=>{
-            if(ele.userID === userObj.userID){
-                return ele;
-            } else {
-                return null;
-            }
-        })
+        if(userDatabase.userData.length > 0){
+            userDatabase.userData.find(ele=>{
+                if(ele.userID === userObj.userID){
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+        } else {
+            return false
+        }
     },
     deleteUser : ()=>{
 
