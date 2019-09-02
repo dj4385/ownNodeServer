@@ -8,6 +8,7 @@ const http = require('http'),
       userSchema = require('./models/userSchema')
 
 function serveStaticFile(req,res){
+    res.setHeader('Content-type','text/html')
     if(req.url == '/'){
         serveFiles('/register.html', res)
     } else if(isStatic(req.url)){
@@ -69,9 +70,9 @@ function serveStaticFile(req,res){
                 </form>
                     `)
                 } 
-                // else {
-                //     res.write('Invalid Login ID and password')
-                // }
+                else {
+                    res.write('Invalid Login ID and password <a href="login.html">Try Again</a>')
+                }
                 res.end()
             })
         })
@@ -96,6 +97,9 @@ function serveStaticFile(req,res){
             res.write(err)
             res.end()
         })
+    }  else {
+        res.write('Invalid url..go to homepage <a href="register.html">GO back</a> ')
+        res.end()
     }
 }
 
