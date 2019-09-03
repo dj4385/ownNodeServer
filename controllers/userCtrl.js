@@ -5,14 +5,20 @@ module.exports = {
         return userDatabase.userData.push(userObj)
     },
     searchUser : (userObj)=>{
+        let isDataFound = 0
         if(userDatabase.userData.length > 0){
             userDatabase.userData.find(ele=>{
                 if(ele.userID === userObj.userID){
-                    return true;
+                    isDataFound = 1;
                 } else {
-                    return false;
+                    isDataFound = 0;
                 }
             })
+            if(isDataFound === 0){
+                return false
+            } else {
+                return true
+            }
         } else {
             return false
         }
