@@ -49,35 +49,58 @@ function serveStaticFile(req,res){
         })
         req.on('end', ()=>{
             var loginObj = qString.parse(loginData)
-            userDb.userData.filter(ele=>{
-                if(ele.userID === loginObj.userID && ele.password === loginObj.password){
-                    console.log(ele.userID)
-                    res.write(`Welcome ${ele.userID}`)
-                    res.write('<br><a href="updateUserInfo.html">Delete Account</a><br><a href="login.html">Logout</a>')
-                    res.write(`<br><h3>Update Profiel</h3><br>
-                    <form action="/doUpdate" method="POST">
-                    <label for="">User ID</label><br>
-                    <input type="text" name="userID" id="" value="${ele.userID}" readonly><br>
-                    <label for="">Password</label><br>
-                    <input type="password" name="password" id="" value="${ele.password}"><br>
-                    <label for="">Full Name</label><br>
-                    <input type="text" name="name" id="" value="${ele.name}"><br>
-                    <label for="">Address</label><br>
-                    <input type="text" name="address" id="" value="${ele.address}"><br>
-                    <label for="">Contact Number</label><br>
-                    <input type="text" name="phoneNo" id="" value="${ele.phoneNo}"><br>
-                    <input type="submit" value="Update"/><br>
-                </form>
-                    `)
-                } 
-                else {
-                    res.write('Invalid Login ID and password <a href="login.html">Try Again</a>')
-                }
-                res.end()
-            })
+            if(userDb.userData.length > 0){
+                userDb.userData.filter(ele=>{
+                    if(ele.userID === loginObj.userID && ele.password === loginObj.password){
+                        console.log(ele.userID)
+                        res.write(`Welcome ${ele.userID}`)
+                        res.write('<br><input type="button" value="Delete Account" id="del" onclick="deleteAcc()"><br><a href="login.html">Logout</a>')
+                        res.write(`<br><h3>Update Profiel</h3><br>
+                        <form action="/doUpdate" method="POST">
+                        <label for="">User ID</label><br>
+                        <input type="text" name="userID" id="" value="${ele.userID}" readonly><br>
+                        <label for="">Password</label><br>
+                        <input type="password" name="password" id="" value="${ele.password}"><br>
+                        <label for="">Full Name</label><br>
+                        <input type="text" name="name" id="" value="${ele.name}"><br>
+                        <label for="">Address</label><br>
+                        <input type="text" name="address" id="" value="${ele.address}"><br>
+                        <label for="">Contact Number</label><br>
+                        <input type="text" name="phoneNo" id="" value="${ele.phoneNo}"><br>
+                        <input type="submit" value="Update"/><br>
+                    </form>
+    
+                    <script>
+                        function deleteAcc(){
+                            let pr = fetch('http://localhost:8000/deleteAccount')
+                            pr.then((res,rej)=>{
+                               if(res){
+                                 alert(res)
+                               } 
+                            }).catch(err=>{
+                                alert(err)
+                            })
+                        }
+                    </script>
+                        `)
+                    } 
+                    else {
+                        res.write('Invalid Login ID and password <a href="login.html">Try Again</a>')
+                    }
+                    res.end()
+                })
+            } else {
+                res.write('Invalid User id and password <a href="login.html">Try Again</a>')
+            }
+            res.end()
         })
         req.on('error', err=>{
             res.write(err)
+            res.end()
+        })
+    } else if(req.url === '/deleteAccount', req.method == 'DELETE'){
+        userDb.user.forEach(ele=>{
+            res.write(ele)
             res.end()
         })
     } else if(req.url === '/doUpdate' && req.method=='POST'){
