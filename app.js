@@ -32,7 +32,7 @@ function serveStaticFile(req,res){
                 res.write('User Register Successfully. <a href="login.html">Login Now</a>' )
                 res.end()
             } else {
-                res.write('User Already registered <a href="login.html">Try again</a> with different userid')
+                res.write('User Already registered <a href="register.html">Try again</a> with different userid')
                 res.end()
             }
         })
